@@ -17,13 +17,9 @@ app.use('/api/orgs', require('./routes/api/orgs'));
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/', function (req, res) {
-  res.send('hello world');
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
-
-// app.get('/*', function (req, res) {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
 
 // get mongo driver connection
 import db from './config/db';
