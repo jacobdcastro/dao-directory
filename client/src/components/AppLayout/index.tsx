@@ -6,14 +6,17 @@ import Sidebar from './Sidebar';
 import ConnectModal from '../../views/ConnectModal';
 import Splash from '../../views/Splash';
 import AllDaos from '../../views/AllDaos';
-import DaoProfile from '../../views/DaoProfile';
+import DaoDirectory from '../../views/DaoDirectory';
 import UserProfile from '../../views/UserProfile';
+import CreateDao from '../../views/CreateDao';
+import { useAuth } from '../../hooks/useAuth';
 
 type Props = {};
 
 const Layout = (props: Props) => {
   const [connectModalShown, setConnectModalShown] = useState(false);
 
+  const { selectedDao, profile } = useAuth();
   const toggleConnectModal = useCallback(
     (value?: boolean) => {
       setConnectModalShown(value || !connectModalShown);
@@ -38,8 +41,15 @@ const Layout = (props: Props) => {
             <Routes>
               <Route path='/' element={<Splash />} />
               <Route path='/daos' element={<AllDaos />} />
-              <Route path='/create-dao' element={<AllDaos />} />
-              <Route path='/directory' element={<DaoProfile />} />
+              <Route path='/create-dao' element={<CreateDao />} />
+              <Route
+                path='/directory'
+                element={
+                  <DaoDirectory
+                    selectedDao={selectedDao || profile?.memberships[0]}
+                  />
+                }
+              />
               <Route path='/profile' element={<UserProfile />} />
             </Routes>
           </main>

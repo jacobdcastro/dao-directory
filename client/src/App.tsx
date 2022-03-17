@@ -5,6 +5,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import Layout from './components/AppLayout';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import AuthContextProvider from './context/AuthContext';
 
 const getLibrary = (provider: any): Web3Provider => {
   const library = new Web3Provider(provider);
@@ -17,12 +18,14 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Layout />
-          <ReactQueryDevtools />
-        </BrowserRouter>
-      </QueryClientProvider>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider>
+            <Layout />
+            <ReactQueryDevtools />
+          </AuthContextProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
     </Web3ReactProvider>
   );
 };

@@ -21,7 +21,7 @@ const ConnectModal: FC<Props> = ({ onClose }) => {
   ];
 
   return (
-    <div className='absolute z-10 h-screen w-screen backdrop-blur-md flex items-center justify-center flex-col'>
+    <div className='absolute z-10 h-screen w-screen backdrop-blur-xl flex items-center justify-center flex-col'>
       <h1 className='text-3xl font-bold text-center mb-2'>
         Connect Wallet
         <br />

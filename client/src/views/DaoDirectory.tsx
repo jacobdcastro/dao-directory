@@ -1,9 +1,32 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router';
 import ViewLayout from '../components/ViewTemplate';
+import { setApiUrl } from '../lib/apiUrl';
 
-const DaoProfile = () => {
+interface Props {
+  selectedDao: string | null;
+}
+
+const DaoDirectory = ({ selectedDao }: Props) => {
+  const navigate = useNavigate();
+  const { data: dao, isLoading } = useQuery([selectedDao], async () => {
+    const { data } = await axios({
+      url: setApiUrl(`/orgs/${selectedDao}`),
+      method: 'GET',
+    });
+    return data;
+  });
+
+  console.log({ selectedDao, dao });
+
+  useEffect(() => {
+    if (!selectedDao) navigate('/daos');
+  }, [navigate, selectedDao]);
+
   return (
-    <ViewLayout header='Friends With Benefits'>
+    <ViewLayout header={dao?.name || 'loading...'}>
       <div className='grid gap-4 md:gap-7 grid-cols-1 md:grid-cols-2'>
         <div className='border-2 border-slate-400 p-3 rounded-xl'>
           <h2 className='text-2xl font-bold'>DAO Info</h2>
@@ -30,4 +53,4 @@ const DaoProfile = () => {
   );
 };
 
-export default DaoProfile;
+export default DaoDirectory;

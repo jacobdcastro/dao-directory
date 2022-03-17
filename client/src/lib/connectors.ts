@@ -3,9 +3,9 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 
 const RPC_URLS: { [chainId: number]: string } = {
-  1: process.env.INFURA_RPC_URL_1 as string,
-  3: process.env.INFURA_RPC_URL_3 as string,
-  4: process.env.INFURA_RPC_URL_4 as string,
+  1: process.env.REACT_APP_INFURA_RPC_URL_1 as string,
+  3: process.env.REACT_APP_INFURA_RPC_URL_3 as string,
+  4: process.env.REACT_APP_INFURA_RPC_URL_4 as string,
 };
 
 // Metamask

@@ -15,6 +15,7 @@ export interface DAO {
   name: string;
   description: string;
   image: string; // ipfs string
+  creator: string;
   teams: Team[];
   members: Member[];
 }

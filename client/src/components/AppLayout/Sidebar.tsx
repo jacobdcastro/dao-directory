@@ -1,13 +1,47 @@
+// @ts-nocheck
+import axios from 'axios';
 import React from 'react';
+import { useQuery } from 'react-query';
+import { useAuth } from '../../hooks/useAuth';
+import { setApiUrl } from '../../lib/apiUrl';
 
-type Props = {};
+type Props = { daoId: string; profile: any };
 
-const Sidebar = (props: Props) => {
-  const daos = [0, 1, 2, 3, 4];
+const DaoItem = ({ daoId, profile, selectDao }: Props) => {
+  const { data: dao } = useQuery([daoId.id, profile], async () => {
+    if (daoId) {
+      const { data } = await axios({
+        url: setApiUrl(`/orgs/${daoId.id}`),
+        method: 'GET',
+      });
+      return data;
+    }
+  });
+
+  return (
+    <button
+      className='bg-blue-500 w-11 h-11 rounded-full mb-2'
+      onClick={() => selectDao(daoId.id)}
+    >
+      {dao && <img src={dao.image} className='rounded-full' />}
+    </button>
+  );
+};
+
+const Sidebar = () => {
+  const { profile, selectDao } = useAuth();
+  const daos = profile ? profile.memberships : [];
+  console.log(daos);
+
   return (
     <div className='bg-white flex flex-col w-16 h-screen py-3 items-center border-r-2 border-r-slate-100'>
-      {daos.map(dao => (
-        <div key={dao} className='bg-blue-500 w-11 h-11 rounded-full mb-2' />
+      {daos.map(daoId => (
+        <DaoItem
+          key={daoId}
+          daoId={daoId}
+          profile={profile}
+          selectDao={selectDao}
+        />
       ))}
     </div>
   );
