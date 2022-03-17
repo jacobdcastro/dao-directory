@@ -2,20 +2,28 @@ import express from 'express';
 const app = express();
 import cors from 'cors';
 import path from 'path';
+import bodyParser from 'body-parser';
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
 
-app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
-// app.use(require("./routes/api/..."));
+app.use('/api/user', require('./routes/api/user'));
+app.use('/api/orgs', require('./routes/api/orgs'));
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+app.get('/', function (req, res) {
+  res.send('hello world');
 });
+
+// app.get('/*', function (req, res) {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 // get mongo driver connection
 import db from './config/db';

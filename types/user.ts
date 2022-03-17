@@ -1,8 +1,8 @@
 export interface User {
   id?: number;
   address: string;
-  signedMessage: string; // tbd
-  dateJoined: string;
+  signedMessage?: string; // tbd
+  dateJoined: number;
   memberships: number[];
   following: number[];
   name?: string;
