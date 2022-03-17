@@ -12,10 +12,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
 app.use('/api/user', require('./routes/api/user'));
 app.use('/api/orgs', require('./routes/api/orgs'));
-
-app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
