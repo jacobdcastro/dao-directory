@@ -16,14 +16,14 @@ type Props = {};
 const Layout = (props: Props) => {
   const [connectModalShown, setConnectModalShown] = useState(false);
 
-  const { selectedDao, profile } = useAuth();
+  const { profile } = useAuth();
   const toggleConnectModal = useCallback(
     (value?: boolean) => {
       setConnectModalShown(value || !connectModalShown);
     },
     [connectModalShown]
   );
-
+  console.log({ profile });
   // const ctx = useWeb3React();
   // console.log(ctx);
 
@@ -39,17 +39,10 @@ const Layout = (props: Props) => {
 
           <main className='flex-grow'>
             <Routes>
-              <Route path='/' element={<Splash />} />
+              <Route path='/' element={<AllDaos />} />
               <Route path='/daos' element={<AllDaos />} />
+              <Route path='/daos/:daoId' element={<DaoDirectory />} />
               <Route path='/create-dao' element={<CreateDao />} />
-              <Route
-                path='/directory'
-                element={
-                  <DaoDirectory
-                    selectedDao={selectedDao || profile?.memberships[0]}
-                  />
-                }
-              />
               <Route path='/profile' element={<UserProfile />} />
             </Routes>
           </main>

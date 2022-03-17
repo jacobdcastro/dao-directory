@@ -14,7 +14,7 @@ const CreateDao = () => {
   const [image, setImage] = useState<File | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const { account } = useWeb3React();
-  const { profile } = useAuth();
+  const { profile, refetchProfile } = useAuth();
   const navigate = useNavigate();
 
   const { mutate: createDao, isLoading } = useMutation(
@@ -42,7 +42,12 @@ const CreateDao = () => {
 
       return data;
     },
-    { onSuccess: () => navigate('/directory') }
+    {
+      onSuccess: async () => {
+        await refetchProfile();
+        navigate('/daos');
+      },
+    }
   );
 
   return (

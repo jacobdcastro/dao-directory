@@ -8,10 +8,10 @@ import { setApiUrl } from '../../lib/apiUrl';
 type Props = { daoId: string; profile: any };
 
 const DaoItem = ({ daoId, profile, selectDao }: Props) => {
-  const { data: dao } = useQuery([daoId.id, profile], async () => {
+  const { data: dao } = useQuery([daoId, profile], async () => {
     if (daoId) {
       const { data } = await axios({
-        url: setApiUrl(`/orgs/${daoId.id}`),
+        url: setApiUrl(`/orgs/id/${daoId}`),
         method: 'GET',
       });
       return data;
@@ -30,8 +30,7 @@ const DaoItem = ({ daoId, profile, selectDao }: Props) => {
 
 const Sidebar = () => {
   const { profile, selectDao } = useAuth();
-  const daos = profile ? profile.memberships : [];
-  console.log(daos);
+  const daos = profile ? profile?.memberships : [];
 
   return (
     <div className='bg-white flex flex-col w-16 h-screen py-3 items-center border-r-2 border-r-slate-100'>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { MdPersonAddAlt, MdVisibility } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 type Props = { data: any };
 
 const DaoCard = ({ data }: Props) => {
   const { name, description, members, teams, image, id } = data;
-  const { profile, selectDao } = useAuth();
-  const membershipDaosById = profile?.memberships.map(d => d.id);
+  const { profile, joinDao } = useAuth();
+  const membershipDaosById = profile?.memberships;
 
   const isMember = membershipDaosById
     ? membershipDaosById?.includes(id)
@@ -34,19 +35,19 @@ const DaoCard = ({ data }: Props) => {
           </span>
         </p>
         <div className='flex'>
-          <button
+          <Link
             className='border-2 rounded-md py-1 px-2 flex items-center mr-2'
-            onClick={() => selectDao(id)}
+            to={`/daos/${id}`}
           >
             <MdVisibility className='mr-1' /> View
-          </button>
+          </Link>
 
           <button
             className='border-2 rounded-md py-1 px-2 flex items-center mr-2'
             disabled={isMember}
+            onClick={async () => await joinDao(id)}
           >
-            <MdPersonAddAlt className='mr-1' />{' '}
-            {isMember ? 'Already Joined' : 'Join'}
+            <MdPersonAddAlt className='mr-1' /> {isMember ? 'Joined!' : 'Join'}
           </button>
         </div>
       </div>

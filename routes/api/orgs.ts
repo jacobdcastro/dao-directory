@@ -2,13 +2,14 @@ import express from 'express';
 import { User } from '../../types/user';
 import _db from '../../config/db';
 import { DAO } from '../../types/dao';
+import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
 // @route   GET api/orgs
 // @desc    Fetches all DAOs
 // access   Public
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
     const db = _db.getDb();
     const allOrgs = await db.collection('organizations').find().toArray();
@@ -19,12 +20,14 @@ router.get('/', async (req, res) => {
 // @route   GET api/orgs/:daoId
 // @desc    Fetches all DAOs
 // access   Public
-router.get('/:daoId', async (req, res) => {
+router.get('/id/:daoId', async (req, res) => {
+  const daoId = req.params.daoId;
   try {
+    console.log(daoId);
     const db = _db.getDb();
     const org = await db
       .collection('organizations')
-      .findOne({ id: req.body.daoId });
+      .findOne({ _id: new ObjectId(daoId) });
 
     res.send(org);
   } catch (error) {}
@@ -35,7 +38,7 @@ router.get('/:daoId', async (req, res) => {
 // access   Public
 router.post('/new', async (req, res) => {
   const { name, description, image, creatorAddress, creatorId } = req.body;
-  console.log('control...');
+
   try {
     const db = _db.getDb();
 
@@ -49,14 +52,12 @@ router.post('/new', async (req, res) => {
       teams: [],
     } as DAO);
 
-    console.log(result);
-
     // add org to creator's membership array
     const result1 = await db
       .collection('users')
       .updateOne(
         { address: creatorAddress },
-        { $push: { memberships: { id: result.insertedId } } }
+        { $push: { memberships: result.insertedId.toString() } }
       );
 
     res.send('Org Created Successfully');
@@ -68,7 +69,7 @@ router.post('/new', async (req, res) => {
 // access   Public
 router.post('/join', async (req, res) => {
   const { userId, daoId } = req.body;
-  console.log('control...');
+  console.log({ userId, daoId });
   try {
     const db = _db.getDb();
 
@@ -76,14 +77,57 @@ router.post('/join', async (req, res) => {
     const result = await db
       .collection('organizations')
       // @ts-ignore
-      .findOneAndUpdate({ _id: daoId }, { $push: { members: userId } });
+      .updateOne({ _id: new ObjectId(daoId) }, { $push: { members: userId } });
 
     // add dao to user's membership array
     const result1 = await db
       .collection('users')
-      .updateOne({ _id: userId }, { $push: { memberships: daoId } });
+      .updateOne(
+        { _id: new ObjectId(userId) },
+        { $push: { memberships: daoId } }
+      );
 
-    res.send('Org Created Successfully');
+    res.send('Org Joined Successfully');
+  } catch (error) {}
+});
+
+// @route   POST api/orgs/team/new
+// @desc    Creates a new Team
+// access   Public
+router.post('/team/new', async (req, res) => {
+  const { daoId, name } = req.body;
+
+  try {
+    const db = _db.getDb();
+
+    // add a team to a dao's teams array
+    const result = await db
+      .collection('organizations')
+      // @ts-ignore
+      .updateOne(
+        { _id: new ObjectId(daoId) },
+        { $push: { teams: { name, members: [] } } }
+      );
+
+    res.send('Team Created Successfully');
+  } catch (error) {}
+});
+
+// @route   POST api/orgs/team/join
+// @desc    Join a Team
+router.post('/team/join', async (req, res) => {
+  const { daoId, teamName, userId } = req.body;
+  try {
+    const db = _db.getDb();
+    console.log(req.body);
+    const result = await db
+      .collection('organizations')
+      .updateOne(
+        { _id: new ObjectId(daoId), 'teams.name': teamName },
+        { $push: { 'teams.$[].members': userId } }
+      );
+
+    return result;
   } catch (error) {}
 });
 

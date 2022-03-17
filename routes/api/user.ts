@@ -1,15 +1,34 @@
 import express from 'express';
 import { User } from '../../types/user';
 import _db from '../../config/db';
+import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
-// @route   POST api/user/:address
+// @route   POST api/user/:id
 // @desc    Signs up a new user
 // access   Public
-router.get('/:address', async (req, res) => {
+router.get('/id/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const db = _db.getDb();
+    const user = await db
+      .collection('users')
+      .findOne({ _id: new ObjectId(id) });
+
+    if (user) {
+      res.send(user);
+    }
+  } catch (error) {}
+});
+
+// @route   GET api/user/:address
+// @desc    Signs up a new user
+// access   Public
+router.get('/address/:address', async (req, res) => {
   const { address } = req.params;
-  console.log(address);
+
   try {
     const db = _db.getDb();
     const user = await db.collection('users').findOne({ address });
@@ -27,8 +46,21 @@ router.get('/:address', async (req, res) => {
 
       const newUser = await db.collection('users').findOne({ address });
 
-      res.send(newUser);
+      // res.send(newUser);
+
+      res.send('hiii');
     }
+  } catch (error) {}
+});
+
+// @route   GET api/user
+// @desc    Fetches all DAOs
+// access   Public
+router.get('/all', async (req, res) => {
+  try {
+    const db = _db.getDb();
+    const allUsers = await db.collection('organizations').find().toArray();
+    res.send(allUsers);
   } catch (error) {}
 });
 
@@ -41,7 +73,7 @@ router.get('/:address', async (req, res) => {
 // @route   POST api/user/:address
 // @desc    Updates user profile
 // access   Public
-router.post('/:address', async (req, res) => {
+router.post('/address/:address', async (req, res) => {
   const { address, dateJoined } = req.body;
   const newUser: User = {
     address,

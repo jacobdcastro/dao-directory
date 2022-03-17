@@ -11,7 +11,10 @@ type Props = {};
 
 const AllDaos = (props: Props) => {
   const { data: daos, isLoading } = useQuery('allDaos', async () => {
-    const { data } = await axios({ url: setApiUrl('/orgs'), method: 'GET' });
+    const { data } = await axios({
+      url: setApiUrl('/orgs/all'),
+      method: 'GET',
+    });
     console.log(data);
     return data;
   });

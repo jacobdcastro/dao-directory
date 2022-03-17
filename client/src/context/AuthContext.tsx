@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
 import { setApiUrl } from '../lib/apiUrl';
 import { useLocation, useNavigate } from 'react-router';
@@ -19,8 +19,8 @@ interface Context {
     following: any[];
     memberships: any[];
   };
-  selectedDao: string | null;
-  selectDao: (daoId: string) => void;
+  joinDao: any;
+  refetchProfile: any;
 }
 
 export const AuthContext = createContext<Context>({
@@ -31,43 +31,49 @@ export const AuthContext = createContext<Context>({
     following: [],
     memberships: [],
   },
-  selectedDao: null,
-  selectDao: () => {},
+  joinDao: () => {},
+  refetchProfile: () => {},
 });
 
 const AuthContextProvider: FC = ({ children }) => {
-  const [selectedDao, setSelectedDao] = useState<string | null>(null);
   const { account } = useWeb3React();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selectDao = useCallback(
-    (daoId: string) => {
-      setSelectedDao(daoId);
-      navigate('/directory');
-    },
-    [navigate]
-  );
-
-  const { data: profile } = useQuery(
-    ['getProfile', account],
+  const { data: profile, refetch: refetchProfile } = useQuery(
+    ['getProfile', account, 'test'],
     async () => {
       if (account) {
         const { data } = await axios({
-          url: setApiUrl(`/user/${account}`),
+          url: setApiUrl(`/user/address/${account}`),
           method: 'GET',
         });
         return data;
       }
+      return;
     },
     {
-      onSuccess: profile =>
-        profile && location.pathname === '/' && navigate('/profile'),
+      onSuccess: profile => {
+        if (profile) location.pathname === '/' && navigate('/profile');
+      },
     }
   );
 
+  const { mutate: joinDao } = useMutation(
+    async daoId => {
+      const { data } = await axios({
+        url: setApiUrl('/orgs/join'),
+        method: 'POST',
+        data: { daoId, userId: profile._id },
+      });
+      console.log('joinDao', data);
+      return data;
+    },
+    { onSuccess: () => refetchProfile() }
+  );
+
   return (
-    <AuthContext.Provider value={{ profile, selectedDao, selectDao }}>
+    <AuthContext.Provider value={{ profile, joinDao, refetchProfile }}>
       {children}
     </AuthContext.Provider>
   );
