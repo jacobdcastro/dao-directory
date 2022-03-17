@@ -15,7 +15,7 @@ const AllDaos = (props: Props) => {
       url: setApiUrl('/orgs/all'),
       method: 'GET',
     });
-    console.log(data);
+
     return data;
   });
 

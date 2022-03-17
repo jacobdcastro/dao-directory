@@ -10,6 +10,7 @@ import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
 import { setApiUrl } from '../lib/apiUrl';
 import { useLocation, useNavigate } from 'react-router';
+import { injected } from '../lib/connectors';
 
 interface Context {
   profile: {
@@ -34,6 +35,33 @@ export const AuthContext = createContext<Context>({
   joinDao: () => {},
   refetchProfile: () => {},
 });
+
+export function useEagerConnect() {
+  const { activate, active } = useWeb3React();
+
+  const [tried, setTried] = useState(false);
+
+  useEffect(() => {
+    injected.isAuthorized().then((isAuthorized: boolean) => {
+      if (isAuthorized) {
+        activate(injected, undefined, true).catch(() => {
+          setTried(true);
+        });
+      } else {
+        setTried(true);
+      }
+    });
+  }, []); // intentionally only running on mount (make sure it's only mounted once :))
+
+  // if the connection worked, wait until we get confirmation of that to flip the flag
+  useEffect(() => {
+    if (!tried && active) {
+      setTried(true);
+    }
+  }, [tried, active]);
+
+  return tried;
+}
 
 const AuthContextProvider: FC = ({ children }) => {
   const { account } = useWeb3React();
@@ -66,11 +94,13 @@ const AuthContextProvider: FC = ({ children }) => {
         method: 'POST',
         data: { daoId, userId: profile._id },
       });
-      console.log('joinDao', data);
+
       return data;
     },
     { onSuccess: () => refetchProfile() }
   );
+
+  useEagerConnect();
 
   return (
     <AuthContext.Provider value={{ profile, joinDao, refetchProfile }}>

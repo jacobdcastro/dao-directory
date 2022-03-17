@@ -23,9 +23,6 @@ const Layout = (props: Props) => {
     },
     [connectModalShown]
   );
-  console.log({ profile });
-  // const ctx = useWeb3React();
-  // console.log(ctx);
 
   return (
     <>

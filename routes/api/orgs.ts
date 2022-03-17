@@ -23,7 +23,6 @@ router.get('/all', async (req, res) => {
 router.get('/id/:daoId', async (req, res) => {
   const daoId = req.params.daoId;
   try {
-    console.log(daoId);
     const db = _db.getDb();
     const org = await db
       .collection('organizations')
@@ -69,7 +68,7 @@ router.post('/new', async (req, res) => {
 // access   Public
 router.post('/join', async (req, res) => {
   const { userId, daoId } = req.body;
-  console.log({ userId, daoId });
+
   try {
     const db = _db.getDb();
 
@@ -119,7 +118,7 @@ router.post('/team/join', async (req, res) => {
   const { daoId, teamName, userId } = req.body;
   try {
     const db = _db.getDb();
-    console.log(req.body);
+
     const result = await db
       .collection('organizations')
       .updateOne(

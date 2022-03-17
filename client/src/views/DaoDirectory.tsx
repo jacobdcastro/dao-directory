@@ -99,8 +99,6 @@ const DaoDirectory = () => {
     { onSuccess: () => refetchDao() }
   );
 
-  console.log(dao);
-
   return (
     <ViewLayout
       header={dao?.name || 'loading...'}
