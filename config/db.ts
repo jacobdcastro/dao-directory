@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { MongoClient } from 'mongodb';
+import { MongoClient, Db as MongoDb } from 'mongodb';
 const Db = process.env.MONGO_ATLAS_URI;
 const client = new MongoClient(Db, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-let _db;
+let _db: MongoDb;
 
 export default {
   connectToServer: function (callback) {
