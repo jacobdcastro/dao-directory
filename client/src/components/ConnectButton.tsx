@@ -1,12 +1,12 @@
 import React from 'react';
 
-type Props = {};
+type Props = { showConnectModal: () => void };
 
-const ConnectButton = (props: Props) => {
+const ConnectButton = ({ showConnectModal }: Props) => {
   return (
     <button
       className='border-2 rounded-md py-1 px-2'
-      onClick={() => console.log('Connecting!!')}
+      onClick={() => showConnectModal()}
     >
       Connect Wallet
     </button>

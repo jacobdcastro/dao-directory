@@ -7,7 +7,7 @@ const Sidebar = (props: Props) => {
   return (
     <div className='bg-white flex flex-col w-16 h-screen py-3 items-center border-r-2 border-r-slate-100'>
       {daos.map(dao => (
-        <div className='bg-blue-500 w-11 h-11 rounded-full mb-2' />
+        <div key={dao} className='bg-blue-500 w-11 h-11 rounded-full mb-2' />
       ))}
     </div>
   );
