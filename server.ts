@@ -1,6 +1,7 @@
 import express from 'express';
 const app = express();
 import cors from 'cors';
+import path from 'path';
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
@@ -8,7 +9,13 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// app.use(require("./routes/record"));
+// app.use(require("./routes/api/..."));
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 // get mongo driver connection
 import db from './config/db';
