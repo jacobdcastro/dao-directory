@@ -15,10 +15,10 @@ app.use(cors());
 app.use('/api/user', require('./routes/api/user'));
 app.use('/api/orgs', require('./routes/api/orgs'));
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
 // get mongo driver connection
