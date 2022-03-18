@@ -10,7 +10,7 @@ import axios from 'axios';
 import { setApiUrl } from '../lib/apiUrl';
 
 const UserProfileCard = ({ daoId }: { daoId: string }) => {
-  const { data: dao } = useQuery('usersDaos', async () => {
+  const { data: dao } = useQuery(['usersDaos', daoId], async () => {
     const { data } = await axios({
       url: setApiUrl(`/orgs/id/${daoId}`),
       method: 'GET',
@@ -30,17 +30,19 @@ const UserProfileCard = ({ daoId }: { daoId: string }) => {
 const UserProfile = () => {
   const { account } = useWeb3React();
   const { profile } = useAuth();
-
+  console.log(profile?.memberships);
   return (
     <ViewLayout
       header={account ? truncateEthAddress(account) : 'My Profile'}
-      actions={[
-        {
-          text: 'Edit Profile',
-          onClick: () => console.log('Edit Profile'),
-          icon: <MdEdit className='mr-1' />,
-        },
-      ]}
+      actions={
+        [
+          // {
+          //   text: 'Edit Profile',
+          //   onClick: () => console.log('Edit Profile'),
+          //   icon: <MdEdit className='mr-1' />,
+          // },
+        ]
+      }
     >
       {/* <div className='grid gap-4 md:gap-7 grid-cols-1'>
         <div className='border-2 border-slate-400 p-3 rounded-xl'>
