@@ -3,14 +3,16 @@ import { MdPersonAddAlt, MdVisibility } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-type Props = { data: any };
+type Props = { data: any; removeTeams?: boolean; joined?: boolean };
 
-const DaoCard = ({ data }: Props) => {
+const DaoCard = ({ data, removeTeams, joined }: Props) => {
   const { name, description, members, teams, image, id } = data;
   const { profile, joinDao } = useAuth();
   const membershipDaosById = profile?.memberships;
 
-  const isMember = membershipDaosById
+  const isMember = joined
+    ? true
+    : membershipDaosById
     ? membershipDaosById?.includes(id)
     : false;
 
@@ -28,12 +30,14 @@ const DaoCard = ({ data }: Props) => {
             {members}
           </span>
         </p>
-        <p className='mb-4'>
-          <span className='font-bold'>Teams:</span>{' '}
-          <span className='bg-purple-200 text-purple-700 font-bold rounded-md p-1'>
-            {teams}
-          </span>
-        </p>
+        {!removeTeams && (
+          <p className='mb-4'>
+            <span className='font-bold'>Teams:</span>{' '}
+            <span className='bg-purple-200 text-purple-700 font-bold rounded-md p-1'>
+              {teams}
+            </span>
+          </p>
+        )}
         <div className='flex'>
           <Link
             className='border-2 rounded-md py-1 px-2 flex items-center mr-2'
