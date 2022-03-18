@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
-// @route   GET api/orgs
+// @route   GET api/orgs/all
 // @desc    Fetches all DAOs
 // access   Public
 router.get('/all', async (req, res) => {
@@ -87,46 +87,6 @@ router.post('/join', async (req, res) => {
       );
 
     res.send('Org Joined Successfully');
-  } catch (error) {}
-});
-
-// @route   POST api/orgs/team/new
-// @desc    Creates a new Team
-// access   Public
-router.post('/team/new', async (req, res) => {
-  const { daoId, name } = req.body;
-
-  try {
-    const db = _db.getDb();
-
-    // add a team to a dao's teams array
-    const result = await db
-      .collection('organizations')
-      // @ts-ignore
-      .updateOne(
-        { _id: new ObjectId(daoId) },
-        { $push: { teams: { name, members: [] } } }
-      );
-
-    res.send('Team Created Successfully');
-  } catch (error) {}
-});
-
-// @route   POST api/orgs/team/join
-// @desc    Join a Team
-router.post('/team/join', async (req, res) => {
-  const { daoId, teamName, userId } = req.body;
-  try {
-    const db = _db.getDb();
-
-    const result = await db
-      .collection('organizations')
-      .updateOne(
-        { _id: new ObjectId(daoId), 'teams.name': teamName },
-        { $push: { 'teams.$[].members': userId } }
-      );
-
-    return result;
   } catch (error) {}
 });
 

@@ -69,10 +69,22 @@ const DaoDirectory = () => {
     { cacheTime: 0, enabled: !!daoId }
   );
 
+  const { data: teams, refetch: refetchTeams } = useQuery(
+    ['daoTeams', daoId, dao],
+    async () => {
+      const { data } = await axios({
+        url: setApiUrl(`/teams/dao/${daoId}`),
+        method: 'GET',
+      });
+      console.log(data);
+      return data;
+    }
+  );
+
   const { mutate: createTeam, isLoading: teamCreationLoading } = useMutation(
     async () => {
       const { data } = await axios({
-        url: setApiUrl('/orgs/team/new'),
+        url: setApiUrl('/teams/new'),
         method: 'POST',
         data: { daoId: dao._id, name: newTeamName },
       });
@@ -90,13 +102,18 @@ const DaoDirectory = () => {
   const { mutate: joinTeam } = useMutation(
     async (teamName: string) => {
       const { data } = await axios({
-        url: setApiUrl('/orgs/team/join'),
+        url: setApiUrl('/teams/join'),
         method: 'POST',
         data: { daoId, teamName, userId: profile._id },
       });
       return data;
     },
-    { onSuccess: () => refetchDao() }
+    {
+      onSuccess: async () => {
+        refetchDao();
+        refetchTeams();
+      },
+    }
   );
 
   return (
@@ -116,8 +133,18 @@ const DaoDirectory = () => {
           <h2 className='text-2xl font-bold'>DAO Info</h2>
           <div>
             <p>{dao?.description}</p>
-            <p>Members</p>
-            <p>Teams</p>
+            <p className='mb-2'>
+              <span className='font-bold'>Members:</span>{' '}
+              <span className='bg-red-200 text-orange-600 font-bold rounded-md p-1'>
+                {dao?.members.length}
+              </span>
+            </p>
+            <p className='mb-4'>
+              <span className='font-bold'>Teams:</span>{' '}
+              <span className='bg-purple-200 text-purple-700 font-bold rounded-md p-1'>
+                {teams?.length}
+              </span>
+            </p>
           </div>
         </div>
         {isAddingTeam && (
@@ -180,18 +207,18 @@ const DaoDirectory = () => {
                   ))}
               </tbody>
             </table>
-          ) : dao?.teams.length > 0 ? (
-            dao?.teams.map((team: { name: string }) => (
+          ) : teams?.length > 0 ? (
+            teams?.map((team: { name: string }) => (
               <div key={team.name}>
                 <div
                   className="bg-green-300 text-green-900'
                 }  px-5 py-3 mr-2 rounded-t-lg flex justify-between items-center"
                 >
                   <h3 className='text-xl font-bold'>{team.name}</h3>
-                  {!dao?.teams
+                  {!teams
                     // @ts-ignore
                     ?.find(t => t.name === team.name)
-                    .members.includes(profile?._id) && (
+                    .members?.includes(profile?._id) && (
                     <button
                       className='border-2 border-green-600 rounded-md py-1 px-2 flex items-center'
                       onClick={() => joinTeam(team.name)}
@@ -214,7 +241,7 @@ const DaoDirectory = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {dao?.teams
+                      {teams
                         // @ts-ignore
                         ?.find(t => t.name === team.name)
                         // @ts-ignore
